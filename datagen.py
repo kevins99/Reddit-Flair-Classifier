@@ -125,7 +125,7 @@ df_india['new_feature'].head(20)
 df_india.to_csv('clean_reddit_india.csv')
 
 # %%
-!ls
+
 
 
 # %%
