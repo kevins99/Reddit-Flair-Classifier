@@ -18,8 +18,16 @@ df_india = pd.read_csv('clean_reddit_india.csv')
 df_india.head(20)
 
 # %%
-
 df_india.columns
+
+# %%
+from sklearn import preprocessing
+le = preprocessing.LabelEncoder()
+df_india['Flair'] = le.fit_transform(df_india['Flair'])
+
+# %%
+df_india['Flair'].head()
+df_india['Flair'].value_counts()
 
 # %%
 
@@ -37,4 +45,7 @@ features.shape
 
 from sklearn.feature_selection import chi2
 import numpy as np
+
+N = 2 
+for 
 # test
