@@ -7,6 +7,10 @@ import numpy as np
 import nltk 
 import re
 
+import altair as alt
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
@@ -19,7 +23,8 @@ df_india.head()
 
 # %%
 df_india.columns
-df_india.drop(columns=['Unnamed: 0', 'Unnamed: 0.1'], inplace=True)
+df_india.drop(columns=['Unnamed: 0'], inplace=True)
+df_india = df_india.rename(columns={'Unnamed: 0.1':'Index'})
 
 
 # %%
@@ -65,4 +70,25 @@ for flair_cat in sorted(flair_list):
     print("Most correlated bigrams: \n{}".format('\n'.join(bigrams[-N:])))
 
     
+# %%
+df_india['content_len'] = df_india['new_feature'].str.len()
+sns.distplot(df_india['content_len']).set_title('Length')
+
+# %%
+df_india['content_len'].describe()
+
+# %%
+quantile_95 = df_india['content_len'].quantile(0.95)
+df_95 = df_india[df_india['content_len']<quantile_95]
+
+# %%
+sns.distplot(df_95['content_len']).set_title('Length')
+
+# %%
+sns.boxplot(data=df_india, x='Flair', y='content_len', width=.5)
+
+
+# %%
+sns.boxplot(data=df_95, x='content_len', y='Flair', width=.5)
+
 # %%
