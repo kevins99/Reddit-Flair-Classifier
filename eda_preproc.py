@@ -10,6 +10,7 @@ import re
 import altair as alt
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pickle
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -40,6 +41,12 @@ df_india['Flair_cat'].value_counts()
 df_india.columns
 
 # %%
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(df_india['new_feature'],
+                                                    df_india['Flair_cat'],
+                                                    test_size=0.2)
+
+# %%
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2', 
         encoding='latin-1', ngram_range=(1, 2), stop_words='english')
@@ -47,7 +54,17 @@ tfidf = TfidfVectorizer(sublinear_tf=True, min_df=5, norm='l2',
 # %%
 features = tfidf.fit_transform(df_india.new_feature).toarray()
 labels = df_india.Flair_cat
-features.shape
+print(features.shape)
+
+features_train = tfidf.fit_transform(X_train).toarray()
+labels_train = y_train
+print(features_train.shape)
+
+features_test = tfidf.fit_transform(X_test).toarray()
+labels_test = y_test
+print(features_test.shape)
+
+
 
 # %%
 from sklearn.feature_selection import chi2
@@ -85,10 +102,40 @@ df_95 = df_india[df_india['content_len']<quantile_95]
 sns.distplot(df_95['content_len']).set_title('Length')
 
 # %%
-sns.boxplot(data=df_india, x='Flair', y='content_len', width=.5)
+sns.boxplot(data=df_india, x='content_len', y='Flair', width=.5)
 
 
 # %%
 sns.boxplot(data=df_95, x='content_len', y='Flair', width=.5)
 
+# %%
+with open('pickles/clean_95.pkl', 'wb') as f:
+    pickle.dump(df_95, f)
+
+with open('pickles/X_train.pkl', 'wb') as f:
+    pickle.dump(X_train, f)
+
+with open('pickles/X_test.pkl', 'wb') as f:
+    pickle.dump(X_test, f)
+
+with open('pickles/y_train.pkl', 'wb') as f:
+    pickle.dump(y_train, f)
+
+with open('pickles/y_test.pkl', 'wb') as f:
+    pickle.dump(X_train, f)
+
+with open('pickles/tfidf.pkl', 'wb') as f:
+    pickle.dump(tfidf, f)
+
+with open('pickles/features_train.pkl', 'wb') as f:
+    pickle.dump(features_train, f)
+
+with open('pickles/features_test.pkl', 'wb') as f:
+    pickle.dump(features_test, f)
+
+with open('Pickles/labels_train.pickle', 'wb') as f:
+    pickle.dump(labels_train, f)
+
+with open('Pickles/labels_test.pkl', 'wb') as f:
+    pickle.dump(labels_test, f)
 # %%

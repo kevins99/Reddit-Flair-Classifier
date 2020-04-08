@@ -111,17 +111,6 @@ df_india['new_feature'].head(20)
 
 
 # %%
-# def listToStr(s):
-#     retStr = ' '.join([str(elem) for elem in s])
-#     return retStr
-
-# def clean_text(text):
-#     text = "".join([word.lower() for word in text if word not in string.punctuation])
-#     tokens = re.split('\W+', text)
-#     text = tokens
-#     return text
-
-# %%
 df_india.to_csv('clean_reddit_india.csv')
 
 # %%
