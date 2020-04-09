@@ -6,6 +6,7 @@ import numpy as np
 
 import nltk 
 import re
+import gensim
 
 import altair as alt
 import seaborn as sns
@@ -23,7 +24,7 @@ df_india = pd.read_csv('clean_reddit_india.csv')
 df_india.head()
 
 # %%
-df_india.columns
+print(df_india.columns)
 df_india.drop(columns=['Unnamed: 0'], inplace=True)
 df_india = df_india.rename(columns={'Unnamed: 0.1':'Index'})
 
@@ -32,6 +33,7 @@ df_india = df_india.rename(columns={'Unnamed: 0.1':'Index'})
 from sklearn import preprocessing
 le = preprocessing.LabelEncoder()
 df_india['Flair_cat'] = le.fit_transform(df_india['Flair'])
+
 
 # %%
 df_india['Flair_cat'].value_counts()
@@ -45,6 +47,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(df_india['new_feature'],
                                                     df_india['Flair_cat'],
                                                     test_size=0.2)
+
 
 # %%
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -60,11 +63,9 @@ features_train = tfidf.fit_transform(X_train).toarray()
 labels_train = y_train
 print(features_train.shape)
 
-features_test = tfidf.fit_transform(X_test).toarray()
+features_test = tfidf.transform(X_test).toarray()
 labels_test = y_test
 print(features_test.shape)
-
-
 
 # %%
 from sklearn.feature_selection import chi2
@@ -76,7 +77,7 @@ flair_list = pd.unique(column_values)
 N = 5
 for flair_cat in sorted(flair_list):
     print(flair_cat)
-    features_chi2 = chi2(features, labels==flair_cat)
+    features_chi2 = chi2(features_train, labels_train==flair_cat)
     indices = np.argsort(features_chi2[0])
     feature_names = np.array(tfidf.get_feature_names())[indices]
     unigrams = [word for word in feature_names if len(word.split(' '))==1]
@@ -109,6 +110,16 @@ sns.boxplot(data=df_india, x='content_len', y='Flair', width=.5)
 sns.boxplot(data=df_95, x='content_len', y='Flair', width=.5)
 
 # %%
+from wordcloud import WordCloud
+long_string = ','.join(df_95['new_feature'].values)
+wc = WordCloud(background_color="white",
+               max_words=5000, contour_width=3,
+               contour_color='steelblue')
+
+wc.generate(long_string)
+wc.to_image()
+
+# %%
 with open('pickles/clean_95.pkl', 'wb') as f:
     pickle.dump(df_95, f)
 
@@ -133,9 +144,10 @@ with open('pickles/features_train.pkl', 'wb') as f:
 with open('pickles/features_test.pkl', 'wb') as f:
     pickle.dump(features_test, f)
 
-with open('Pickles/labels_train.pickle', 'wb') as f:
+with open('pickles/labels_train.pickle', 'wb') as f:
     pickle.dump(labels_train, f)
 
-with open('Pickles/labels_test.pkl', 'wb') as f:
+with open('pickles/labels_test.pkl', 'wb') as f:
     pickle.dump(labels_test, f)
+
 # %%

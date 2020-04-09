@@ -59,7 +59,7 @@ def ret_string(text):
     return str(text)
 
 def remove_punc(text):
-    text_nopunc = "".join([char for char in text if char not in string.punctuation])
+    text_nopunc = " ".join([char for char in text if char not in string.punctuation])
     return text_nopunc
 
 def tokenize(text):
